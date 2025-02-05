@@ -1,6 +1,9 @@
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.HashSet;
+import java.time.LocalTime;
 
 public class ClientProgram {
     public static void main(String[] args) {
@@ -9,8 +12,6 @@ public class ClientProgram {
 
         // Prompt the user for the DNS or IP address
         System.out.print("Enter the DNS or IP address of the server: ");
-
-        // Read user input as a string
         String serverAddress = scanner.nextLine();
 
         // Display the entered address
@@ -40,13 +41,28 @@ public class ClientProgram {
             System.out.print("\nEnter an Item ID: ");
             itemID = scanner.nextLine();
 
-            // Validate user input against the set of valid IDs
             if (validItemIDs.contains(itemID)) {
                 System.out.println("Valid Item ID Entered: " + itemID);
                 break;
             } else {
                 System.out.println("Invalid Item ID! Please enter a valid one from the list above.");
             }
+        }
+
+        // Record local time before sending request
+        LocalTime requestTime = LocalTime.now();
+        System.out.println("Request time recorded: " + requestTime);
+
+        // Send the request to the server
+        try (Socket socket = new Socket(serverAddress, 8080); // Assume server listens on port 8080
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+            
+            // Send the Item ID as a request message
+            out.println(itemID);
+            System.out.println("Request sent to server: " + itemID);
+
+        } catch (Exception e) {
+            System.out.println("Error connecting to server: " + e.getMessage());
         }
 
         // Close the scanner
