@@ -14,6 +14,15 @@ public class ClientProgram {
         // Display the entered address
         System.out.println("You entered: " + serverAddress);
 
+        // Display the table header
+        System.out.println("\nItem ID\t\tItem Description");
+        System.out.println("00001\t\tNew Inspiron 15");
+        System.out.println("00002\t\tNew Inspiron 17");
+        System.out.println("00003\t\tNew Inspiron 15R");
+        System.out.println("00004\t\tNew Inspiron 15z Ultrabook");
+        System.out.println("00005\t\tXPS 14 Ultrabook");
+        System.out.println("00006\t\tNew XPS 12 UltrabookXPS");
+
         // Close the scanner
         scanner.close();
     }
