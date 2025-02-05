@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.Set;
+import java.util.HashSet;
 
 public class ClientProgram {
     public static void main(String[] args) {
@@ -38,11 +40,12 @@ public class ClientProgram {
             System.out.print("\nEnter an Item ID: ");
             itemID = scanner.nextLine();
 
-            if (validItemsIDs.contains(itemID)) {
-                System.out.println("Valid Item ID Entered: " +itemID);
+            // Validate user input against the set of valid IDs
+            if (validItemIDs.contains(itemID)) {
+                System.out.println("Valid Item ID Entered: " + itemID);
                 break;
             } else {
-                System.out.println("Invalid Item ID! Please enter a valid one from the list above.");   
+                System.out.println("Invalid Item ID! Please enter a valid one from the list above.");
             }
         }
 
