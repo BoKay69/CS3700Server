@@ -1,9 +1,12 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
-import java.time.LocalTime;
+import java.time.Instant;
+import java.time.Duration;
 
 public class ClientProgram {
     public static void main(String[] args) {
@@ -49,23 +52,50 @@ public class ClientProgram {
             }
         }
 
-        // Record local time before sending request
-        LocalTime requestTime = LocalTime.now();
-        System.out.println("Request time recorded: " + requestTime);
+        // Record time before sending request
+        Instant sendTime = Instant.now();
 
-        // Send the request to the server
+        // Send the request and receive the response
         try (Socket socket = new Socket(serverAddress, 8080); // Assume server listens on port 8080
-             PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
-            
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+
             // Send the Item ID as a request message
             out.println(itemID);
             System.out.println("Request sent to server: " + itemID);
 
+            // Read the server response
+            String serverResponse = in.readLine(); // Assume response is a single line
+            if (serverResponse == null) {
+                throw new Exception("No response from server.");
+            }
+
+            // Record time after receiving response
+            Instant receiveTime = Instant.now();
+
+            // Calculate Round-Trip Time (RTT) in milliseconds
+            long rtt = Duration.between(sendTime, receiveTime).toMillis();
+
+            // Split response into components (format: "Item Description, Unit Price, Inventory")
+            String[] responseParts = serverResponse.split(",");
+            if (responseParts.length != 3) {
+                throw new Exception("Invalid response format from server.");
+            }
+
+            String itemDescription = responseParts[0].trim();
+            String unitPrice = responseParts[1].trim();
+            String inventory = responseParts[2].trim();
+
+            // Display the received information in tabular form
+            System.out.println("\nItem ID\t\tItem Description\t\tUnit Price\tInventory\tRTT of Query");
+            System.out.printf("%s\t%s\t$%s\t\t%s\t\t%d ms%n", itemID, itemDescription, unitPrice, inventory, rtt);
+
         } catch (Exception e) {
-            System.out.println("Error connecting to server: " + e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
 
         // Close the scanner
         scanner.close();
     }
 }
+
